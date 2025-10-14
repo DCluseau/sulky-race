@@ -20,7 +20,7 @@ ranking = []
 # Type of race choice
 def choose_race():
     """
-
+    Usage : choose a type of race (tiercé, quarté, quinté)
     :return:
     """
     nb = 0
@@ -50,7 +50,7 @@ def choose_horses_number():
 # Throw dice
 def throw_dice():
     """
-
+    Usage : throw 1D6 (dice with 6 faces)
     :return:
     """
     result = randint(MIN_DICE,MAX_DICE + 1)
@@ -60,17 +60,18 @@ def throw_dice():
 def add_horse(arr_horses, num):
     """
     Usage : add horse to horses list
+    :param num:
     :param arr_horses:
     :return:
     """
-    horse = {"number" : num, "speed" : 0, "distance" : 0, "dq" : False}
+    horse = {"number" : num, "speed" : 0, "distance" : 0, "dq" : False, "time_run" : 0}
     arr_horses.append(horse)
     return arr_horses
 
 # Calculate speed
 def calculate_speed(dice_result, current_speed):
     """
-
+    Usage : calculate horse's speed
     :param current_speed:
     :param dice_result:
     :return:
@@ -126,7 +127,7 @@ def calculate_speed(dice_result, current_speed):
 # Update horse speed
 def update_horse_speed(speed_init, speed_updater):
     """
-
+    Usage : find the horse's new speed
     :param speed_init:
     :param speed_updater:
     :return:
@@ -137,7 +138,7 @@ def update_horse_speed(speed_init, speed_updater):
 # Update distance
 def update_horse_distance(init_distance, updated_speed):
     """
-
+    Usage : find the distance the horse ran
     :param init_distance:
     :param updated_speed:
     :return:
@@ -148,7 +149,7 @@ def update_horse_distance(init_distance, updated_speed):
 # Calculate the total distance the horses ran
 def calculate_total_distance(horses_list):
     """
-
+    Usage : calculate the maximum distance was run by a horse
     :param horses_list:
     :return:
     """
@@ -161,11 +162,11 @@ def calculate_total_distance(horses_list):
 # Rank horses
 def rank_horses(horse_rank):
     """
-
+    Usage : find the final ranking of the race
     :param horse_rank:
     :return:
     """
-    return horse_rank["distance"]
+    return horse_rank["time_run"]
 
 # Choose race
 race_choice = choose_race()
@@ -178,26 +179,42 @@ for i in range(nb_horses):
     horse_list = add_horse(horse_list, i)
 
 # Begin race
-while total_distance < RACETRACK_LENGTH:
+end = False
+horses_left = nb_horses
+nb_turn = 0
+while not end:
     # For each horse, throw dice
+    nb_turn += 1
+    print(f"Turn number {nb_turn}")
+    print(f"Time : {nb_turn * 10}")
     for j in range(nb_horses):
         if not horse_list[j]["dq"]:
-            dice_res = throw_dice()
-            # Search speed modifier
-            modifier_speed = calculate_speed(dice_res, horse_list[j]["speed"])
-            if modifier_speed < 3:
-                # Update horse speed
-                horse_list[j]["speed"] = update_horse_speed(horse_list[j]["speed"], modifier_speed)
-                # Update distance
-                horse_list[j]["distance"] = update_horse_distance(horse_list[j]["distance"], horse_list[j]["speed"])
-            else:
-                horse_list[j]["dq"] = True
+            if horse_list[j]["distance"] < 2400:
+                dice_res = throw_dice()
+                # Search speed modifier
+                modifier_speed = calculate_speed(dice_res, horse_list[j]["speed"])
+                if modifier_speed < 3:
+                    # Update horse speed
+                    horse_list[j]["speed"] = update_horse_speed(horse_list[j]["speed"], modifier_speed)
+                    # Update distance
+                    horse_list[j]["distance"] = update_horse_distance(horse_list[j]["distance"], horse_list[j]["speed"])
+                    horse_list[j]["time_run"] += 10
+                    if horse_list[j]["distance"] >= 2400:
+                        horses_left -= 1
+                    print(f"Horse number {horse_list[j]["number"]}\n Speed : {horse_list[j]["speed"]}\n Distance run : {horse_list[j]["distance"]}\n")
+                else:
+                    horse_list[j]["dq"] = True
+                    print(f"Horse number {horse_list[j]["number"]} disqualified !")
+                    horses_left -= 1
+    if horses_left <= 0:
+        end = True
     # Add distance to total
     total_distance = calculate_total_distance(horse_list)
 print("Terminé !")
 print("Classement :")
 
 # Find race_choice ranking
-horse_list.sort(reverse=True, key=rank_horses(horse_list))
+horse_list.sort(key=rank_horses)
+print(f"Nombre de tours : {nb_turn}")
 for i in range(race_choice):
-    print(f"Horse number : {horse_list[i]["num"]}\n Distance : {horse_list[i]["distance"]}")
+    print(f"Horse number : {horse_list[i]["number"]}\n Time : {horse_list[i]["time_run"]} seconds")
