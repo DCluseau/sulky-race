@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
+
 import time
 from random import randint
 
@@ -19,9 +19,9 @@ MIN_DICE = 1
 MAX_DICE = 6
 # Initialization of variables
 # Choice of the race
-race_choice = 0
+# race_choice = 0
 # Number of horses
-nb_horses = 0
+# nb_horses = 0
 # List of horses
 horse_list = []
 # Total distance run by the fastest of the horses
