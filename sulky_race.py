@@ -6,6 +6,7 @@ from random import randint
 
 # Une course de trot attelé rassemble 12 à 20 chevaux, chacun tractant un sulky, et étant mené par un driver. Elle peut faire l’objet d’un tiercé, d’un quarté, ou d’un quinté. La course est supposée se dérouler sur un hippodrome rectiligne (chaque cheval disposant de son propre couloir), d’une longueur de 2 400 m. Il est à noter que chaque cheval doit respecter l’allure du trot de bout en bout, le passage au galop entrainant sa disqualification. L’utilisateur saisit au démarrage le nombre de chevaux et le type de la course.
 # La course se déroule à la manière d’un « jeu de plateau » : à chaque tour de jeu, chaque cheval fait l’objet d’un jet de dé (à 6 faces), qui décide d’une altération possible de sa vitesse (augmentation, stabilisation, diminution). La nouvelle vitesse détermine alors la distance dont il avance. Chaque tour de jeu représente 10 secondes du déroulement de la course, mais le temps ne sera pas rendu dans le programme. C’est l’utilisateur qui fera avancer la course de tour en tour, à la suite d’un message du programme l’y invitant.
+# Optionnel : afficher après chaque tour une progression visuelle de chaque cheval vis-à-vis de la ligne d’arrivée.
 
 # Type of race (tiercé, quarté, quinté)
 RACE_TYPE = [3, 4, 5]
@@ -224,7 +225,7 @@ while not end:
     time.sleep(0.01)
     print(f"Turn number {nb_turn}")
     print(f"Time : {nb_turn * 10}")
-    display_race(horse_list)
+
     for j in range(nb_horses):
         if not horse_list[j]["dq"]:
             if horse_list[j]["distance"] < 2400:
@@ -244,8 +245,13 @@ while not end:
                     horse_list[j]["dq"] = True
                     print(f"Horse number {horse_list[j]["number"]} disqualified !")
                     horses_left -= 1
+    display_race(horse_list)
     if horses_left <= 0:
         end = True
+    else:
+        # User must press a key to continue the race
+        user_continue = 0
+        continue_user = input("Press any key to continue the race.\n")
     # Add distance to total
     total_distance = calculate_total_distance(horse_list)
 print("Terminé !")
