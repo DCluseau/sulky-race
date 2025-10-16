@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
+import time
 from random import randint
 
 # Une course de trot attelé rassemble 12 à 20 chevaux, chacun tractant un sulky, et étant mené par un driver. Elle peut faire l’objet d’un tiercé, d’un quarté, ou d’un quinté. La course est supposée se dérouler sur un hippodrome rectiligne (chaque cheval disposant de son propre couloir), d’une longueur de 2 400 m. Il est à noter que chaque cheval doit respecter l’allure du trot de bout en bout, le passage au galop entrainant sa disqualification. L’utilisateur saisit au démarrage le nombre de chevaux et le type de la course.
@@ -180,18 +181,28 @@ def rank_horses(horse_rank):
     return horse_rank["time_run"]
 
 # Display race
-def display_race(horse):
+def display_race(tab_horses):
     """
     Usage : display track of each horse
-    :param horse: element of list of horses
+    :param tab_horses: list of horses
     :return: none
     """
     track = ""
-    for h in range(horse["distance"] // 23):
-        track += "="
-    track += f"[{horse["number"]}]"
+    for k in range(len(tab_horses)):
+        for h in range(tab_horses[k]["distance"] // 23):
+            track += "="
+        if (tab_horses[k]["distance"] // 23) > 103 :
+            if tab_horses[k]["number"] + 1 < 10:
+                track += f"{" " * (104 - (tab_horses[k]["distance"] // 23))}|[0{tab_horses[k]["number"] + 1}] \n"
+            else:
+                track += f"{" " * (104 - (tab_horses[k]["distance"] // 23))}|[{tab_horses[k]["number"] + 1}] \n"
+        else:
+            if tab_horses[k]["number"] + 1 < 10 :
+                track += f"[0{tab_horses[k]["number"] + 1}]{" " * (104 - (tab_horses[k]["distance"] // 23))}| \n"
+            else:
+                track += f"[{tab_horses[k]["number"] + 1}]{" " * (104 - (tab_horses[k]["distance"] // 23))}| \n"
     print(f"{track}")
-    print("-" * 24)
+    print("-" * 104)
 
 # Choose race
 race_choice = choose_race()
@@ -210,8 +221,10 @@ nb_turn = 0
 while not end:
     # For each horse, throw dice
     nb_turn += 1
+    time.sleep(0.01)
     print(f"Turn number {nb_turn}")
     print(f"Time : {nb_turn * 10}")
+    display_race(horse_list)
     for j in range(nb_horses):
         if not horse_list[j]["dq"]:
             if horse_list[j]["distance"] < 2400:
@@ -231,7 +244,6 @@ while not end:
                     horse_list[j]["dq"] = True
                     print(f"Horse number {horse_list[j]["number"]} disqualified !")
                     horses_left -= 1
-            display_race(horse_list[j])
     if horses_left <= 0:
         end = True
     # Add distance to total
